@@ -92,7 +92,10 @@ print("\nSource patch status:")
 source = repo / "src/xbox/WebRtcSession.cpp"
 if source.is_file():
     body = source.read_text(encoding="utf-8")
-    finished = "void WebRtcSession::setPreferredVideoSize(" in body and         '{"horizontal", preferredVideoWidth_}' in body
+    finished = (
+        "void WebRtcSession::setPreferredVideoSize(" in body
+        and '{"horizontal", preferredVideoWidth_}' in body
+    )
     add("Handshake patch applied", finished,
         "run: py -3.11 scripts/xbox/apply_stream_dimensions.py" if not finished else "present")
 else:
