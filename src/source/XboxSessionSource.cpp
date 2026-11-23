@@ -344,6 +344,7 @@ void XboxSessionSource::run(XboxConnectDesc desc) {
             log::error("xbox-audio", std::format("Opus decoder creation failed code={}", opusError));
         }
 
+        p.rtc.setPreferredVideoSize(p.desc.preferredVideoWidth, p.desc.preferredVideoHeight);
         ApiSignaling signaling(*p.api, p.sessionId);
         std::string error;
         if (!p.rtc.start(signaling, &error)) {

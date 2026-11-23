@@ -61,6 +61,9 @@ public:
     void setCallbacks(WebRtcCallbacks callbacks) { callbacks_ = std::move(callbacks); }
     // Tests: gather candidates on this address only (e.g. "127.0.0.1"). Empty: every interface.
     void setBindAddress(std::string address) { bindAddress_ = std::move(address); }
+    // Requested client dimensions, not a guarantee of the console encoded resolution.
+    // Set before start(); the console can negotiate or return a different size.
+    void setPreferredVideoSize(uint32_t width, uint32_t height);
 
     // Offer, signalling, ICE; returns once connected, false (with `error`) on failure or timeout.
     bool start(Signaling& signaling, std::string* error, std::chrono::milliseconds timeout = std::chrono::seconds(20));
@@ -105,6 +108,7 @@ private:
     std::chrono::steady_clock::time_point origin_ = std::chrono::steady_clock::now();
     std::string failure_;
     std::string bindAddress_;
+    uint32_t preferredVideoWidth_ = 1920, preferredVideoHeight_ = 1080;
 };
 
 } // namespace veyra::xbox

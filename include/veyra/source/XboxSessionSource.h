@@ -32,6 +32,7 @@ struct XboxConnectDesc {
     std::string consoleName;         // for messages
     bool gamepad = true;             // forward the PC's controller
     bool softwareDecode = false;    // opt-in workaround for silent hardware decode corruption
+    uint32_t preferredVideoWidth = 1920, preferredVideoHeight = 1080; // preference only
     std::string locale = "zh-CN";
     std::shared_ptr<ID3D12Device> decodeDevice;
     std::shared_ptr<ID3D12CommandQueue> decodeQueue;

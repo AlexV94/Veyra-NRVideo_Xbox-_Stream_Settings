@@ -139,9 +139,60 @@ DialogLayer {
             VSwitch { objectName: "xbox-gamepad"; checked: xbDialog.st.gamepad !== false; onToggled: checked => xbDialog.xb.set("gamepad", checked) }
         }
         VRow {
+            label: qsTr("Requested resolution (reconnect)")
+            hint: qsTr("Client preference only. Xbox may ignore it. Higher resolution does not guarantee higher bitrate.")
+            VSelect {
+                objectName: "xbox-stream-resolution"
+                implicitWidth: 190
+                value: xbDialog.st.streamResolution === "1440p" ? "1440p · experimental" : "1080p · default"
+                options: [
+                    { id: "1080p", label: "1080p · default" },
+                    { id: "1440p", label: "1440p · experimental" }
+                ]
+                onPicked: id => xbDialog.xb.set("streamResolution", id)
+            }
+        }
+        VRow {
             label: qsTr("软件视频解码")
             hint: qsTr("兼容选项：画面出现持续花屏时尝试开启，断开后重新连接生效。可能增加 CPU 占用和延迟；超分和补帧仍使用 GPU。")
             VSwitch { objectName: "xbox-software-decode"; checked: xbDialog.st.softwareDecode === true; onToggled: checked => xbDialog.xb.set("softwareDecode", checked) }
+        }
+    }
+    DialogSection { visible: xbDialog.st.streaming; text: qsTr("Live stream statistics") }
+    DialogGroup {
+        visible: xbDialog.st.streaming
+        VRow {
+            label: qsTr("Actual received stream")
+            hint: qsTr("Video bitrate is measured from received encoded frames, not negotiated bandwidth.")
+            Text {
+                text: (xbDialog.st.stream.width || 0) + "×" + (xbDialog.st.stream.height || 0)
+                      + " · " + Number(xbDialog.st.stream.videoMbps || 0).toFixed(1) + " Mbps"
+                color: Theme.t1
+                font.family: Theme.fontMono
+                font.pixelSize: Theme.fsSmall
+            }
+        }
+        VRow {
+            label: qsTr("Frame rate / network RTT")
+            Text {
+                text: Number(xbDialog.st.stream.receivedFps || 0).toFixed(1) + " fps received · "
+                    + Number(xbDialog.st.stream.decodedFps || 0).toFixed(1) + " fps decoded · "
+                    + Number(xbDialog.st.stream.rttMs || 0).toFixed(0) + " ms RTT"
+                color: Theme.t1
+                font.family: Theme.fontMono
+                font.pixelSize: Theme.fsSmall
+            }
+        }
+        VRow {
+            label: qsTr("Local drops / decoder errors")
+            hint: qsTr("These counters do not measure network packet loss.")
+            Text {
+                text: Number(xbDialog.st.stream.dropped || 0).toFixed(0) + " dropped · "
+                    + Number(xbDialog.st.stream.decodeErrors || 0).toFixed(0) + " errors"
+                color: Theme.t1
+                font.family: Theme.fontMono
+                font.pixelSize: Theme.fsSmall
+            }
         }
     }
     DialogNote { objectName: "xbox-status"; visible: (xbDialog.st.status || "").length > 0; text: (xbDialog.st.busy ? qsTr("处理中 · ") : "") + (xbDialog.st.status || "") }
